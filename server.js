@@ -53,7 +53,7 @@ app.post("/api/analizar", upload.single("imagen"), async (req, res) => {
 
         //Instanciar el comando de deteción
         const command = new DetectLabelsCommand(params)
-        await rekognitionClient.send(command)
+        const response = await rekognitionClient.send(command)
 
         //Enviar la respuesta al frontend como JSON
         res.json({
@@ -65,7 +65,7 @@ app.post("/api/analizar", upload.single("imagen"), async (req, res) => {
         console.log(`Error en el servicio AWS:`, error);
         res.status(500).json({
             error: "No se pudo concretar el análisis en AWS Rekognition",
-            details: error.mesagge,
+            details: error.messagge,
             code: error.name,
         });
     }
