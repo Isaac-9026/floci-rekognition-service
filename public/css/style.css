@@ -1,0 +1,205 @@
+/* Better UI & Impeccable Style Guidelines */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+    --bg-color: #f8fafc;
+    --surface-color: #ffffff;
+    --text-primary: #0f172a;
+    --text-secondary: #475569;
+    --primary-color: #2563eb;
+    --primary-hover: #1d4ed8;
+    --border-color: #e2e8f0;
+    --radius-md: 16px;
+    --radius-sm: 8px;
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+    --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-primary);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    margin: 0;
+    padding: 24px;
+    -webkit-font-smoothing: antialiased;
+}
+
+h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 32px;
+    color: var(--text-primary);
+    text-align: center;
+    letter-spacing: -0.025em;
+}
+
+/* Contenedores estilo Tarjeta (Impeccable) */
+form, body > div {
+    background-color: var(--surface-color);
+    padding: 32px;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--border-color);
+    width: 100%;
+    max-width: 420px;
+    box-sizing: border-box;
+    margin-bottom: 24px;
+}
+
+/* Form Elements */
+form div {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 24px;
+}
+
+label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+/* File Input Styling (Better UI micro-interactions) */
+input[type="file"] {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    background: #f1f5f9;
+    border: 2px dashed #cbd5e1;
+    border-radius: var(--radius-sm);
+    padding: 16px;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+input[type="file"]:hover {
+    border-color: #94a3b8;
+    background: #e2e8f0;
+}
+
+input[type="file"]:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+input[type="file"]::file-selector-button {
+    background-color: var(--surface-color);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 8px 16px;
+    margin-right: 16px;
+    font-weight: 600;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: var(--transition);
+    box-shadow: var(--shadow-sm);
+}
+
+input[type="file"]::file-selector-button:hover {
+    background-color: #f8fafc;
+    border-color: #cbd5e1;
+}
+
+/* Button Styling */
+button[type="submit"] {
+    width: 100%;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: var(--radius-sm);
+    padding: 12px 24px;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    box-shadow: var(--shadow-sm);
+}
+
+button[type="submit"]:hover {
+    background-color: var(--primary-hover);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+}
+
+button[type="submit"]:active {
+    transform: translateY(0);
+}
+
+/* Results Section */
+h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-top: 0;
+    margin-bottom: 20px;
+    color: var(--text-primary);
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 12px;
+}
+
+#listaEtiquetas {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* 1. Mejora: Estado Vacío (Empty State) puramente en CSS */
+#listaEtiquetas:empty {
+    padding: 32px;
+    background-color: #f1f5f9;
+    border: 2px dashed #cbd5e1;
+    border-radius: var(--radius-sm);
+    text-align: center;
+}
+
+#listaEtiquetas:empty::after {
+    content: "Aún no hay resultados. Sube una imagen para comenzar.";
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+/* 2. Mejora: Animación de entrada (Micro-interacción Better UI) */
+@keyframes slideUpFade {
+    0% {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+#listaEtiquetas li {
+    background-color: #f8fafc;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    padding: 14px 16px;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: var(--transition);
+    font-weight: 500;
+    /* Aplicamos la animación */
+    animation: slideUpFade 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+#listaEtiquetas li:hover {
+    border-color: #cbd5e1;
+    background-color: #f1f5f9;
+    color: var(--text-primary);
+    transform: translateX(4px); /* Slight interaction feedback */
+}
