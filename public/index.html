@@ -22,6 +22,37 @@
         <ul id="listaEtiquetas"></ul>
     </div>
 
+    <section aria-labelledby="tituloTextract">
+        <h2 id="tituloTextract">Detectar texto con AWS Textract</h2>
+
+        <form action="" id="textractForm">
+            <div>
+                <label for="documento">Seleccione un PDF</label>
+                <input
+                    type="file"
+                    name="documento"
+                    id="documento"
+                    accept=".pdf,application/pdf"
+                    aria-describedby="ayudaDocumento"
+                    required
+                >
+                <p id="ayudaDocumento">
+                    PDF de una página y menos de 5 MB
+                    (5 × 1024 × 1024 bytes). No se admiten PDF cifrados.
+                </p>
+            </div>
+            <button type="submit" id="enviarDocumento">
+                Detectar texto
+            </button>
+        </form>
+
+        <div>
+            <h3>Resultados de Textract</h3>
+            <p id="estadoTextract" role="status" aria-live="polite"></p>
+            <ul id="listaTextos"></ul>
+        </div>
+    </section>
+
     <script>
         const form = document.getElementById("uploadForm")
         const listaEtiquetas = document.getElementById("listaEtiquetas")
@@ -66,6 +97,120 @@
                 listaEtiquetas.innerHTML = `<li>Error de conexión</li>`
             }
         })
+    </script>
+
+    <script>
+        const textractForm = document.getElementById("textractForm");
+        const documentoInput = document.getElementById("documento");
+        const enviarDocumento = document.getElementById("enviarDocumento");
+        const estadoTextract = document.getElementById("estadoTextract");
+        const listaTextos = document.getElementById("listaTextos");
+        const MAX_PDF_SIZE = 5 * 1024 * 1024;
+
+        textractForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            listaTextos.textContent = "";
+            estadoTextract.textContent = "";
+
+            const archivo = documentoInput.files[0];
+
+            if (!archivo) {
+                estadoTextract.textContent = "Selecciona un archivo PDF.";
+                return;
+            }
+
+            const tieneExtensionPdf =
+                archivo.name.toLowerCase().endsWith(".pdf");
+
+            //Algunos navegadores no informan el MIME.
+            //El backend vuelve a validar el archivo y su contenido.
+            const tieneMimeCompatible =
+                archivo.type === "" || archivo.type === "application/pdf";
+
+            if (!tieneExtensionPdf || !tieneMimeCompatible) {
+                estadoTextract.textContent =
+                    "Solo se permiten archivos PDF.";
+                return;
+            }
+
+            if (archivo.size === 0) {
+                estadoTextract.textContent = "El archivo está vacío.";
+                return;
+            }
+
+            if (archivo.size >= MAX_PDF_SIZE) {
+                estadoTextract.textContent =
+                    "El PDF debe pesar menos de 5 MB.";
+                return;
+            }
+
+            const formData = new FormData();
+
+            //Si el navegador no informa el MIME, se declara para el envío.
+            //Esto no sustituye la validación del contenido en el backend.
+            const documento = archivo.type === ""
+                ? new Blob([archivo], { type: "application/pdf" })
+                : archivo;
+
+            formData.append("documento", documento, archivo.name);
+
+            enviarDocumento.disabled = true;
+            estadoTextract.textContent =
+                "Analizando PDF con AWS Textract...";
+
+            try {
+                const response = await fetch("/api/detect-text", {
+                    method: "POST",
+                    body: formData,
+                });
+
+                let data;
+
+                try {
+                    data = await response.json();
+                } catch (error) {
+                    throw new Error(
+                        "El servidor devolvió una respuesta no válida."
+                    );
+                }
+
+                if (!response.ok || !data.success) {
+                    throw new Error(
+                        data.error || "No se pudo analizar el PDF."
+                    );
+                }
+
+                if (!Array.isArray(data.Blocks)) {
+                    throw new Error(
+                        "La respuesta no contiene bloques de Textract válidos."
+                    );
+                }
+
+                //Mostrar líneas, no palabras, para evitar texto duplicado.
+                const lineas = data.Blocks.filter(
+                    (block) => block.BlockType === "LINE"
+                );
+
+                lineas.forEach((linea) => {
+                    const li = document.createElement("li");
+                    li.textContent =
+                        `Texto: ${linea.Text} - confianza: ${linea.Confidence}`;
+                    listaTextos.appendChild(li);
+                });
+
+                estadoTextract.textContent = lineas.length > 0
+                    ? "Análisis completado."
+                    : "No se detectó texto en el PDF.";
+            } catch (error) {
+                console.error(error);
+                estadoTextract.textContent = error instanceof TypeError
+                    ? "Error de conexión al enviar el PDF."
+                    : error.message;
+            } finally {
+                enviarDocumento.disabled = false;
+            }
+        });
     </script>
 </body>
 </html>
