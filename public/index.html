@@ -1,214 +1,756 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AWS Rekognition</title>
-    <link rel="stylesheet" href="/css/style.css">
+    <meta name="color-scheme" content="light">
+    <title>AWS Studio | Análisis de archivos</title>
+    <link rel="stylesheet" href="css/style.css">
 </head>
+
 <body>
-    <h1>Analizando archivos con AWS</h1>
+    <!-- Iconos locales: sin librerías ni solicitudes externas. -->
+    <svg class="sr-only" aria-hidden="true" focusable="false">
+        <defs>
+            <symbol id="icon-image" viewBox="0 0 24 24">
+                <rect x="3" y="3" width="18" height="18" rx="3"/>
+                <circle cx="8" cy="8" r="1.5"/>
+                <path d="m21 15-5-5L5 21"/>
+                <path d="m14 17-4-4-7 7"/>
+            </symbol>
+            <symbol id="icon-document" viewBox="0 0 24 24">
+                <path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9Z"/>
+                <path d="M14 3v6h6M8 13h8M8 17h6"/>
+            </symbol>
+            <symbol id="icon-upload" viewBox="0 0 24 24">
+                <path d="M12 16V3m-5 5 5-5 5 5M4 16v4a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-4"/>
+            </symbol>
+            <symbol id="icon-spark" viewBox="0 0 24 24">
+                <path d="m12 3 2.5 6.5L21 12l-6.5 2.5L12 21l-2.5-6.5L3 12l6.5-2.5ZM20 2v4m-2-2h4"/>
+            </symbol>
+            <symbol id="icon-arrow" viewBox="0 0 24 24">
+                <path d="M4 12h16m-6-6 6 6-6 6"/>
+            </symbol>
+            <symbol id="icon-info" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="9"/>
+                <path d="M12 11v6m0-10h.01"/>
+            </symbol>
+            <symbol id="icon-grid" viewBox="0 0 24 24">
+                <rect x="3" y="3" width="7" height="7" rx="1.5"/>
+                <rect x="14" y="3" width="7" height="7" rx="1.5"/>
+                <rect x="3" y="14" width="7" height="7" rx="1.5"/>
+                <rect x="14" y="14" width="7" height="7" rx="1.5"/>
+            </symbol>
+            <symbol id="icon-list" viewBox="0 0 24 24">
+                <path d="M9 6h11M9 12h11M9 18h11M4 6h.01M4 12h.01M4 18h.01"/>
+            </symbol>
+        </defs>
+    </svg>
 
-    <form action="" id="uploadForm">
-        <div>
-            <label for="imagen">Seleccione imagen</label>
-            <input type="file" name="imagen" id="imagen" accept="image/*" required>
+    <a class="skip-link" href="#contenido">Saltar al contenido</a>
+
+    <header class="topbar">
+        <div class="container topbar-inner">
+            <div class="brand">
+                <span class="brand-mark" aria-hidden="true">A</span>
+                <div>
+                    <p class="brand-name">AWS <span>Studio</span></p>
+                    <p class="brand-caption">Tu espacio de análisis</p>
+                </div>
+            </div>
+
+            <div class="topbar-right">
+                <span class="workspace-label">Espacio de trabajo</span>
+                <span class="badge">
+                    <span class="badge-dot" aria-hidden="true"></span>
+                    Modo demo
+                </span>
+            </div>
         </div>
-        <button type="submit">Enviar</button>
-    </form>
+    </header>
 
-    <div>
-        <h3>Resultados de análisis</h3>
-        <ul id="listaEtiquetas"></ul>
-    </div>
+    <main id="contenido" class="container">
+        <div class="breadcrumb">
+            <svg aria-hidden="true"><use href="#icon-grid"/></svg>
+            <span>Workspace</span>
+            <span aria-hidden="true">/</span>
+            <span class="breadcrumb-current">Análisis de archivos</span>
+        </div>
 
-    <section aria-labelledby="tituloTextract">
-        <h2 id="tituloTextract">Detectar texto con AWS Textract</h2>
-
-        <form action="" id="textractForm">
+        <section class="hero" aria-labelledby="page-title">
             <div>
-                <label for="documento">Seleccione un PDF</label>
-                <input
-                    type="file"
-                    name="documento"
-                    id="documento"
-                    accept=".pdf,application/pdf"
-                    aria-describedby="ayudaDocumento"
-                    required
-                >
-                <p id="ayudaDocumento">
-                    PDF de una página y menos de 5 MB
-                    (5 × 1024 × 1024 bytes). No se admiten PDF cifrados.
+                <p class="eyebrow">
+                    <svg aria-hidden="true"><use href="#icon-spark"/></svg>
+                    Inteligencia aplicada
+                </p>
+                <h1 id="page-title">Tus archivos, más claros.</h1>
+                <p class="hero-description">
+                    Identifica el contenido de tus imágenes y convierte
+                    documentos en texto. Elige una herramienta y empieza
+                    con un archivo.
                 </p>
             </div>
-            <button type="submit" id="enviarDocumento">
-                Detectar texto
-            </button>
-        </form>
 
-        <div>
-            <h3>Resultados de Textract</h3>
-            <p id="estadoTextract" role="status" aria-live="polite"></p>
-            <ul id="listaTextos"></ul>
+            <div class="hero-visual" aria-hidden="true">
+                <div class="visual-orbit"></div>
+                <div class="visual-core">
+                    <svg><use href="#icon-spark"/></svg>
+                </div>
+                <div class="visual-tile first">
+                    <svg><use href="#icon-image"/></svg>
+                </div>
+                <div class="visual-tile second">
+                    <svg><use href="#icon-document"/></svg>
+                </div>
+            </div>
+        </section>
+
+        <ol class="workflow" aria-label="Cómo funciona">
+            <li><span class="step-number">1</span> Selecciona tu archivo</li>
+            <li><span class="step-number">2</span> Inicia el análisis</li>
+            <li><span class="step-number">3</span> Explora los resultados</li>
+        </ol>
+
+        <div class="workspace">
+            <!-- Rekognition -->
+            <section class="card" aria-labelledby="tituloRekognition">
+                <div class="card-header">
+                    <div class="service-row">
+                        <span class="service-icon">
+                            <svg aria-hidden="true"><use href="#icon-image"/></svg>
+                        </span>
+                        <span class="service-tag">Amazon Rekognition</span>
+                    </div>
+                    <h2 id="tituloRekognition">Explora tus imágenes</h2>
+                    <p class="card-description">
+                        Detecta objetos, escenas y etiquetas, con el nivel
+                        de confianza de cada resultado.
+                    </p>
+                </div>
+
+                <form id="uploadForm" class="upload-form">
+                    <div class="dropzone" id="imageDropzone">
+                        <input
+                            class="file-input"
+                            type="file"
+                            name="imagen"
+                            id="imagen"
+                            accept=".jpg,.jpeg,.png,image/jpeg,image/png"
+                            aria-labelledby="imageLabel"
+                            aria-describedby="ayudaImagen"
+                            required
+                        >
+                        <span class="upload-icon" id="imageUploadIcon">
+                            <svg aria-hidden="true"><use href="#icon-upload"/></svg>
+                        </span>
+                        <img class="preview" id="imagePreview" alt="Vista previa de la imagen seleccionada" hidden>
+                        <label class="drop-title" id="imageLabel" for="imagen">
+                            Arrastra tu imagen o <span>explora archivos</span>
+                        </label>
+                        <p class="drop-help" id="imageFileInfo">Un archivo a la vez</p>
+                    </div>
+
+                    <p class="file-requirements" id="ayudaImagen">
+                        <svg aria-hidden="true"><use href="#icon-info"/></svg>
+                        JPG o PNG. Selecciona una imagen nítida para empezar.
+                    </p>
+
+                    <button type="submit" class="submit-button" id="enviarImagen">
+                        <span class="button-text">Analizar imagen</span>
+                        <svg class="button-arrow" aria-hidden="true"><use href="#icon-arrow"/></svg>
+                        <span class="spinner" aria-hidden="true" hidden></span>
+                    </button>
+                </form>
+
+                <div class="results" id="imageResults" aria-busy="false">
+                    <div class="results-heading">
+                        <h3>
+                            <svg aria-hidden="true"><use href="#icon-list"/></svg>
+                            Etiquetas detectadas
+                        </h3>
+                        <span class="result-count" id="imageCount">0 etiquetas</span>
+                    </div>
+
+                    <p id="estadoImagen" class="status" role="status" aria-live="polite"></p>
+                    <ul id="listaEtiquetas" class="result-list" aria-label="Etiquetas detectadas"></ul>
+
+                    <div class="empty-state" id="imageEmpty">
+                        <svg aria-hidden="true"><use href="#icon-image"/></svg>
+                        <strong>Una imagen, nuevos descubrimientos</strong>
+                        <p>Sus etiquetas aparecerán aquí al analizarla.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Textract -->
+            <section class="card card-document" aria-labelledby="tituloTextract">
+                <div class="card-header">
+                    <div class="service-row">
+                        <span class="service-icon">
+                            <svg aria-hidden="true"><use href="#icon-document"/></svg>
+                        </span>
+                        <span class="service-tag">Amazon Textract</span>
+                    </div>
+                    <h2 id="tituloTextract">Dale voz a tus documentos</h2>
+                    <p class="card-description">
+                        Extrae las líneas de texto de un PDF para leerlas,
+                        consultarlas y copiarlas fácilmente.
+                    </p>
+                </div>
+
+                <form id="textractForm" class="upload-form">
+                    <div class="dropzone" id="pdfDropzone">
+                        <input
+                            class="file-input"
+                            type="file"
+                            name="documento"
+                            id="documento"
+                            accept=".pdf,application/pdf"
+                            aria-labelledby="pdfLabel"
+                            aria-describedby="ayudaDocumento"
+                            required
+                        >
+                        <span class="upload-icon">
+                            <svg aria-hidden="true"><use href="#icon-upload"/></svg>
+                        </span>
+                        <label class="drop-title" id="pdfLabel" for="documento">
+                            Arrastra tu PDF o <span>explora archivos</span>
+                        </label>
+                        <p class="drop-help" id="pdfFileInfo">Un archivo a la vez</p>
+                    </div>
+
+                    <p class="file-requirements" id="ayudaDocumento">
+                        <svg aria-hidden="true"><use href="#icon-info"/></svg>
+                        PDF de una página, sin cifrar y menor a 5 MB
+                        (5 × 1024 × 1024 bytes).
+                    </p>
+
+                    <button type="submit" class="submit-button secondary" id="enviarDocumento">
+                        <span class="button-text">Extraer texto</span>
+                        <svg class="button-arrow" aria-hidden="true"><use href="#icon-arrow"/></svg>
+                        <span class="spinner" aria-hidden="true" hidden></span>
+                    </button>
+                </form>
+
+                <div class="results" id="pdfResults" aria-busy="false">
+                    <div class="results-heading">
+                        <h3>
+                            <svg aria-hidden="true"><use href="#icon-list"/></svg>
+                            Texto extraído
+                        </h3>
+                        <div class="results-actions">
+                            <button type="button" class="copy-button" id="copiarTexto" hidden>
+                                Copiar
+                            </button>
+                            <span class="result-count" id="pdfCount">0 líneas</span>
+                        </div>
+                    </div>
+
+                    <p id="estadoTextract" class="status" role="status" aria-live="polite"></p>
+                    <ul id="listaTextos" class="result-list" aria-label="Líneas de texto detectadas"></ul>
+
+                    <div class="empty-state" id="pdfEmpty">
+                        <svg aria-hidden="true"><use href="#icon-document"/></svg>
+                        <strong>Menos transcripción, más posibilidades</strong>
+                        <p>El texto de tu documento aparecerá aquí.</p>
+                    </div>
+                </div>
+            </section>
         </div>
-    </section>
+
+        <aside class="workspace-note" aria-label="Información del entorno">
+            <svg aria-hidden="true"><use href="#icon-info"/></svg>
+            <p>
+                <strong>Estás en un entorno de demostración.</strong>
+                El backend utiliza respuestas simuladas de Rekognition
+                y Textract; no realiza un análisis real de tus archivos.
+            </p>
+        </aside>
+
+        <footer class="footer">
+            <p class="footer-signature">AWS Studio / Análisis de archivos</p>
+            <p>Rekognition + Textract</p>
+        </footer>
+    </main>
 
     <script>
-        const form = document.getElementById("uploadForm")
-        const listaEtiquetas = document.getElementById("listaEtiquetas")
-
-        form.addEventListener("submit", async(e) => {
-            e.preventDefault() //Detener el envio
-
-            //FormData = contenedor de datos
-            const formData = new FormData(form)
-
-            listaEtiquetas.innerHTML = `<li>Analizando imagen con AWS...</li>`
-
-            //Enviar los datos por el API...
-            try {
-                const response = await fetch('/api/analizar', {
-                    method: 'POST',
-                    body: formData
-                })
-                //El servicio de AWS empezará a iniciar la solución...
-
-                const data = await response.json()
-
-                if (data.success){
-                    listaEtiquetas.innerHTML = ''
-                    data.labels.forEach( label => {
-                        const li = document.createElement("li")
-                        li.innerHTML = `Imagen: ${label.Name} - confianza: ${label.Confidence}`
-                        listaEtiquetas.appendChild(li)
-                    })
-                }else {
-                    //CUIDADO: no se deben exponer TODOS LOS ERRORES
-                    //¿Cómo se manejan los errores en backend?
-                    listaEtiquetas.innerHTML = `
-                        <li>${data.error}</li>,
-                        <li>${data.details}</li>,
-                        <li>${data.code}</li>
-                    `
-                }
-
-            } catch (error) {
-                console.error(error)
-                listaEtiquetas.innerHTML = `<li>Error de conexión</li>`
-            }
-        })
-    </script>
-
-    <script>
-        const textractForm = document.getElementById("textractForm");
-        const documentoInput = document.getElementById("documento");
-        const enviarDocumento = document.getElementById("enviarDocumento");
-        const estadoTextract = document.getElementById("estadoTextract");
-        const listaTextos = document.getElementById("listaTextos");
+        const $ = (id) => document.getElementById(id);
         const MAX_PDF_SIZE = 5 * 1024 * 1024;
 
-        textractForm.addEventListener("submit", async (e) => {
-            e.preventDefault();
+        function setStatus(element, message = "", tone = "info") {
+            element.textContent = message;
+            element.dataset.tone = tone;
+        }
 
-            listaTextos.textContent = "";
-            estadoTextract.textContent = "";
+        function formatSize(bytes) {
+            if (bytes < 1024) return `${bytes} B`;
+            if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+            return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
+        }
 
-            const archivo = documentoInput.files[0];
+        function validateImage(file) {
+            if (!file) return "Selecciona una imagen para continuar.";
+            if (!file.size) return "La imagen está vacía. Elige otro archivo.";
 
-            if (!archivo) {
-                estadoTextract.textContent = "Selecciona un archivo PDF.";
-                return;
+            const validExtension = /\.(jpe?g|png)$/i.test(file.name);
+            const validMime = ["", "image/jpeg", "image/png"].includes(file.type);
+
+            if (!validExtension || !validMime) {
+                return "Selecciona una imagen en formato JPG o PNG.";
             }
 
-            const tieneExtensionPdf =
-                archivo.name.toLowerCase().endsWith(".pdf");
+            return "";
+        }
 
-            //Algunos navegadores no informan el MIME.
-            //El backend vuelve a validar el archivo y su contenido.
-            const tieneMimeCompatible =
-                archivo.type === "" || archivo.type === "application/pdf";
+        function validatePdf(file) {
+            if (!file) return "Selecciona un PDF para continuar.";
+            if (!file.size) return "El PDF está vacío. Elige otro archivo.";
 
-            if (!tieneExtensionPdf || !tieneMimeCompatible) {
-                estadoTextract.textContent =
-                    "Solo se permiten archivos PDF.";
-                return;
+            const validExtension = /\.pdf$/i.test(file.name);
+            const validMime = ["", "application/pdf"].includes(file.type);
+
+            if (!validExtension || !validMime) {
+                return "Solo se permiten archivos PDF.";
             }
 
-            if (archivo.size === 0) {
-                estadoTextract.textContent = "El archivo está vacío.";
-                return;
+            if (file.size >= MAX_PDF_SIZE) {
+                return "El PDF debe pesar menos de 5 MB.";
             }
 
-            if (archivo.size >= MAX_PDF_SIZE) {
-                estadoTextract.textContent =
-                    "El PDF debe pesar menos de 5 MB.";
-                return;
+            // La cantidad de páginas, el cifrado y el contenido real
+            // deben validarse en el backend.
+            return "";
+        }
+
+        function setupUpload(config) {
+            const input = $(config.input);
+            const zone = $(config.zone);
+            const label = $(config.label);
+            const info = $(config.info);
+            const originalLabel = label.innerHTML;
+            const status = $(config.status);
+            const list = $(config.list);
+            const empty = $(config.empty);
+            const count = $(config.count);
+            const preview = config.preview ? $(config.preview) : null;
+            const icon = config.icon ? $(config.icon) : null;
+            let previewUrl = null;
+            let dragDepth = 0;
+
+            function clearPreview() {
+                if (previewUrl) {
+                    URL.revokeObjectURL(previewUrl);
+                    previewUrl = null;
+                }
+
+                if (preview) {
+                    preview.hidden = true;
+                    preview.removeAttribute("src");
+                }
+
+                if (icon) icon.hidden = false;
             }
 
-            const formData = new FormData();
+            function resetResults() {
+                list.replaceChildren();
+                empty.hidden = false;
+                count.textContent = config.initialCount;
+                setStatus(status);
+                config.onReset?.();
+            }
 
-            //Si el navegador no informa el MIME, se declara para el envío.
-            //Esto no sustituye la validación del contenido en el backend.
-            const documento = archivo.type === ""
-                ? new Blob([archivo], { type: "application/pdf" })
-                : archivo;
+            function update() {
+                resetResults();
+                clearPreview();
+                zone.classList.remove("has-file");
 
-            formData.append("documento", documento, archivo.name);
+                const file = input.files[0];
 
-            enviarDocumento.disabled = true;
-            estadoTextract.textContent =
-                "Analizando PDF con AWS Textract...";
+                if (!file) {
+                    label.innerHTML = originalLabel;
+                    info.textContent = "Un archivo a la vez";
+                    return;
+                }
+
+                const error = config.validate(file);
+
+                if (error) {
+                    input.value = "";
+                    label.innerHTML = originalLabel;
+                    info.textContent = "Selecciona otro archivo";
+                    setStatus(status, error, "error");
+                    return;
+                }
+
+                zone.classList.add("has-file");
+                label.textContent = file.name;
+                info.textContent = `${formatSize(file.size)} · Pulsa para cambiar`;
+
+                if (preview) {
+                    previewUrl = URL.createObjectURL(file);
+                    preview.src = previewUrl;
+                    preview.hidden = false;
+                    if (icon) icon.hidden = true;
+                }
+            }
+
+            if (preview) {
+                preview.addEventListener("error", () => {
+                    clearPreview();
+                    info.textContent = "Vista previa no disponible · Pulsa para cambiar";
+                });
+            }
+
+            input.addEventListener("change", update);
+
+            zone.addEventListener("dragenter", (event) => {
+                event.preventDefault();
+                if (input.disabled) return;
+                dragDepth++;
+                zone.classList.add("is-dragging");
+            });
+
+            zone.addEventListener("dragover", (event) => {
+                event.preventDefault();
+                if (event.dataTransfer) {
+                    event.dataTransfer.dropEffect = input.disabled ? "none" : "copy";
+                }
+            });
+
+            zone.addEventListener("dragleave", () => {
+                dragDepth = Math.max(0, dragDepth - 1);
+                if (!dragDepth) zone.classList.remove("is-dragging");
+            });
+
+            zone.addEventListener("drop", (event) => {
+                event.preventDefault();
+                dragDepth = 0;
+                zone.classList.remove("is-dragging");
+
+                if (input.disabled) return;
+
+                const files = event.dataTransfer?.files;
+                if (!files?.length) return;
+
+                if (files.length !== 1) {
+                    setStatus(status, "Arrastra un solo archivo a la vez.", "error");
+                    return;
+                }
+
+                try {
+                    const transfer = new DataTransfer();
+                    transfer.items.add(files[0]);
+                    input.files = transfer.files;
+                    update();
+                } catch {
+                    setStatus(
+                        status,
+                        "No se pudo adjuntar el archivo. Usa el selector de archivos.",
+                        "error"
+                    );
+                }
+            });
+
+            return { input, zone, status, list, empty, count };
+        }
+
+        let extractedText = "";
+
+        const imageUpload = setupUpload({
+            input: "imagen",
+            zone: "imageDropzone",
+            label: "imageLabel",
+            info: "imageFileInfo",
+            status: "estadoImagen",
+            list: "listaEtiquetas",
+            empty: "imageEmpty",
+            count: "imageCount",
+            initialCount: "0 etiquetas",
+            preview: "imagePreview",
+            icon: "imageUploadIcon",
+            validate: validateImage
+        });
+
+        const pdfUpload = setupUpload({
+            input: "documento",
+            zone: "pdfDropzone",
+            label: "pdfLabel",
+            info: "pdfFileInfo",
+            status: "estadoTextract",
+            list: "listaTextos",
+            empty: "pdfEmpty",
+            count: "pdfCount",
+            initialCount: "0 líneas",
+            validate: validatePdf,
+            onReset() {
+                extractedText = "";
+                $("copiarTexto").hidden = true;
+            }
+        });
+
+        function setLoading(button, upload, results, loading, idleText) {
+            button.disabled = loading;
+            upload.input.disabled = loading;
+            upload.zone.classList.toggle("is-disabled", loading);
+            results.setAttribute("aria-busy", String(loading));
+
+            button.querySelector(".button-text").textContent =
+                loading ? "Analizando archivo..." : idleText;
+
+            button.querySelector(".button-arrow").hidden = loading;
+            button.querySelector(".spinner").hidden = !loading;
+        }
+
+        function createResult(text, confidence) {
+            const item = document.createElement("li");
+            item.className = "result-item";
+
+            const content = document.createElement("span");
+            content.className = "result-text";
+            content.textContent = text;
+            item.append(content);
+
+            if (
+                typeof confidence === "number" &&
+                Number.isFinite(confidence) &&
+                confidence >= 0 &&
+                confidence <= 100
+            ) {
+                const badge = document.createElement("span");
+                badge.className = "confidence";
+                badge.textContent = `${confidence.toFixed(1)}%`;
+                badge.dataset.level = confidence >= 80 ? "high" : "low";
+                badge.setAttribute(
+                    "aria-label",
+                    `Confianza: ${confidence.toFixed(1)} por ciento`
+                );
+                item.append(badge);
+            }
+
+            return item;
+        }
+
+        async function postFile(url, formData) {
+            const controller = new AbortController();
+            const timeout = setTimeout(() => controller.abort(), 60000);
 
             try {
-                const response = await fetch("/api/detect-text", {
+                const response = await fetch(url, {
                     method: "POST",
                     body: formData,
+                    signal: controller.signal
                 });
+
+                // No se muestran detalles internos del servidor en la interfaz.
+                if (!response.ok) {
+                    const messages = {
+                        400: "El archivo no pudo validarse. Revisa los requisitos.",
+                        413: "El archivo supera el tamaño permitido por el servidor.",
+                        415: "El servidor no admite este formato de archivo.",
+                        422: "No se pudo procesar el archivo. Revisa su contenido.",
+                        429: "Hay demasiadas solicitudes. Inténtalo de nuevo más tarde."
+                    };
+
+                    throw new Error(
+                        messages[response.status] ||
+                        "No se pudo completar el análisis. Inténtalo de nuevo."
+                    );
+                }
 
                 let data;
 
                 try {
                     data = await response.json();
-                } catch (error) {
+                } catch {
+                    throw new Error("El servidor devolvió una respuesta no válida.");
+                }
+
+                if (!data || typeof data !== "object" || !data.success) {
                     throw new Error(
-                        "El servidor devolvió una respuesta no válida."
+                        "No se pudo analizar el archivo. Revisa los requisitos e inténtalo de nuevo."
                     );
                 }
 
-                if (!response.ok || !data.success) {
+                return data;
+            } catch (error) {
+                if (controller.signal.aborted) {
                     throw new Error(
-                        data.error || "No se pudo analizar el PDF."
+                        "El servidor tardó demasiado en responder. Inténtalo de nuevo."
                     );
                 }
 
-                if (!Array.isArray(data.Blocks)) {
+                if (error instanceof TypeError) {
                     throw new Error(
-                        "La respuesta no contiene bloques de Textract válidos."
+                        "No se pudo conectar con el servidor. Revisa tu conexión."
                     );
                 }
 
-                //Mostrar líneas, no palabras, para evitar texto duplicado.
-                const lineas = data.Blocks.filter(
+                throw error;
+            } finally {
+                clearTimeout(timeout);
+            }
+        }
+
+        $("uploadForm").addEventListener("submit", async (event) => {
+            event.preventDefault();
+
+            const button = $("enviarImagen");
+            if (button.disabled) return;
+
+            const file = imageUpload.input.files[0];
+            const error = validateImage(file);
+
+            if (error) {
+                setStatus(imageUpload.status, error, "error");
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append("imagen", file, file.name);
+
+            imageUpload.list.replaceChildren();
+            imageUpload.count.textContent = "0 etiquetas";
+            imageUpload.empty.hidden = true;
+            setStatus(imageUpload.status, "Procesando imagen en modo demo...");
+
+            setLoading(button, imageUpload, $("imageResults"), true, "Analizar imagen");
+
+            try {
+                const data = await postFile("/api/analizar", formData);
+
+                if (
+                    !Array.isArray(data.labels) ||
+                    !data.labels.every(
+                        (label) => label && typeof label.Name === "string"
+                    )
+                ) {
+                    throw new Error("La respuesta no contiene etiquetas válidas.");
+                }
+
+                const fragment = document.createDocumentFragment();
+
+                for (const label of data.labels) {
+                    fragment.append(createResult(label.Name, label.Confidence));
+                }
+
+                imageUpload.list.append(fragment);
+
+                const total = data.labels.length;
+                imageUpload.count.textContent =
+                    `${total} ${total === 1 ? "etiqueta" : "etiquetas"}`;
+
+                setStatus(
+                    imageUpload.status,
+                    total
+                        ? "Listo. Estos son los resultados simulados."
+                        : "La respuesta simulada no contiene etiquetas.",
+                    "success"
+                );
+            } catch (error) {
+                setStatus(imageUpload.status, error.message, "error");
+            } finally {
+                setLoading(
+                    button, imageUpload, $("imageResults"), false, "Analizar imagen"
+                );
+            }
+        });
+
+        $("textractForm").addEventListener("submit", async (event) => {
+            event.preventDefault();
+
+            const button = $("enviarDocumento");
+            if (button.disabled) return;
+
+            const file = pdfUpload.input.files[0];
+            const error = validatePdf(file);
+
+            if (error) {
+                setStatus(pdfUpload.status, error, "error");
+                return;
+            }
+
+            const formData = new FormData();
+            const documentFile = file.type === ""
+                ? new Blob([file], { type: "application/pdf" })
+                : file;
+
+            formData.append("documento", documentFile, file.name);
+
+            extractedText = "";
+            $("copiarTexto").hidden = true;
+            pdfUpload.list.replaceChildren();
+            pdfUpload.count.textContent = "0 líneas";
+            pdfUpload.empty.hidden = true;
+
+            setStatus(pdfUpload.status, "Procesando documento en modo demo...");
+            setLoading(button, pdfUpload, $("pdfResults"), true, "Extraer texto");
+
+            try {
+                const data = await postFile("/api/detect-text", formData);
+
+                if (
+                    !Array.isArray(data.Blocks) ||
+                    !data.Blocks.every(
+                        (block) =>
+                            block &&
+                            typeof block.BlockType === "string" &&
+                            (block.BlockType !== "LINE" || typeof block.Text === "string")
+                    )
+                ) {
+                    throw new Error("La respuesta no contiene bloques de texto válidos.");
+                }
+
+                // Se muestran líneas, no palabras, para evitar duplicados.
+                const lines = data.Blocks.filter(
                     (block) => block.BlockType === "LINE"
                 );
 
-                lineas.forEach((linea) => {
-                    const li = document.createElement("li");
-                    li.textContent =
-                        `Texto: ${linea.Text} - confianza: ${linea.Confidence}`;
-                    listaTextos.appendChild(li);
-                });
+                const fragment = document.createDocumentFragment();
 
-                estadoTextract.textContent = lineas.length > 0
-                    ? "Análisis completado."
-                    : "No se detectó texto en el PDF.";
+                for (const line of lines) {
+                    fragment.append(createResult(line.Text, line.Confidence));
+                }
+
+                pdfUpload.list.append(fragment);
+                extractedText = lines.map((line) => line.Text).join("\n");
+                $("copiarTexto").hidden = lines.length === 0;
+
+                pdfUpload.count.textContent =
+                    `${lines.length} ${lines.length === 1 ? "línea" : "líneas"}`;
+
+                setStatus(
+                    pdfUpload.status,
+                    lines.length
+                        ? "Listo. Ya puedes consultar y copiar el texto simulado."
+                        : "La respuesta simulada no contiene líneas de texto.",
+                    "success"
+                );
             } catch (error) {
-                console.error(error);
-                estadoTextract.textContent = error instanceof TypeError
-                    ? "Error de conexión al enviar el PDF."
-                    : error.message;
+                setStatus(pdfUpload.status, error.message, "error");
             } finally {
-                enviarDocumento.disabled = false;
+                setLoading(
+                    button, pdfUpload, $("pdfResults"), false, "Extraer texto"
+                );
+            }
+        });
+
+        $("copiarTexto").addEventListener("click", async () => {
+            if (!extractedText) return;
+
+            const button = $("copiarTexto");
+            button.disabled = true;
+
+            try {
+                await navigator.clipboard.writeText(extractedText);
+                setStatus(pdfUpload.status, "Texto copiado al portapapeles.", "success");
+            } catch {
+                setStatus(
+                    pdfUpload.status,
+                    "No se pudo copiar automáticamente. Selecciona y copia el texto de la lista.",
+                    "error"
+                );
+            } finally {
+                button.disabled = false;
             }
         });
     </script>
